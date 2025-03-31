@@ -1,0 +1,22 @@
+<div class="container">
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar Socio</mat-label>
+      <input matInput type="text" [(ngModel)]="searchTerm" placeholder="Ingrese número de DNI" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="search()">
+      <mat-icon>search</mat-icon> Buscar
+    </button>
+  </mat-card>
+
+  <mat-card *ngIf="member else notAuthorized" class="results-card">
+    <mat-icon>check</mat-icon> El Socio {{member.name}} {{member.lastName}} está autorizado a estacionar.
+  </mat-card>
+
+  <ng-template #notAuthorized>
+    <mat-card *ngIf="member else notAuthorized" class="results-card">
+      No se encontró un socio con el DNI {{searchTerm}}
+    </mat-card>
+  </ng-template>
+</div>
