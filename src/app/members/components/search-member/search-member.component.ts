@@ -37,8 +37,9 @@ export class SearchMemberComponent {
   }
 
   search() {
-    if (this.dni.value) {
-      this.membersService.searchMemberByDni(this.dni.value).pipe(
+    const value = this.dni.value;
+    if (this.dni.valid && value) {
+      this.membersService.searchMemberByDni(value).pipe(
         takeUntilDestroyed(this.destroyRef),
         catchError((err) => {
             console.error('Error:', err);
@@ -52,7 +53,7 @@ export class SearchMemberComponent {
     }
   }
 
-  clearAccessResponse() {
+  reset() {
     this.registerAccessResponse = undefined;
     this.dni.reset();
     this.memberNotFoundMessage = '';
