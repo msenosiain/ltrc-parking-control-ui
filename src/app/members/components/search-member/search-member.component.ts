@@ -54,7 +54,7 @@ export class SearchMemberComponent {
 
   clearAccessResponse() {
     this.registerAccessResponse = undefined;
-    this.dni.setValue('');
+    this.dni.reset();
     this.memberNotFoundMessage = '';
   }
 }
