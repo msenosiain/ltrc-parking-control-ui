@@ -3,13 +3,13 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormsModule} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
-import {Member} from '../../member.interface';
-import {MembersService, RegisterAccessResponse} from '../../members.service';
 import {CommonModule} from '@angular/common';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {catchError, of} from 'rxjs';
+import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
+import {MembersService, RegisterAccessResponse} from '../../members.service';
 
 @Component({
   selector: 'ltrc-search-member',
@@ -22,9 +22,10 @@ import {catchError, of} from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    NgxMaskDirective
   ],
   styleUrl: './search-member.component.scss',
-  providers: [MembersService]
+  providers: [provideNgxMask(), MembersService]
 })
 export class SearchMemberComponent {
   destroyRef = inject(DestroyRef);
