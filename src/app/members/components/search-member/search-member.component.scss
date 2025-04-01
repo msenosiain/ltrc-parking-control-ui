@@ -1,20 +1,13 @@
 .container {
   display: flex;
   flex-direction: column;
+
   & > * {
     width: 100%;
   }
 
-  .search-card{
+  .search-card {
     padding: 16px;
-  }
-
-  form {
-    margin-bottom: 20px;
-
-    & > * {
-      margin: 5px 0;
-    }
   }
 }
 

@@ -51,17 +51,7 @@ export class SearchMemberComponent {
     }
   }
 
-  cancel() {
-    this.clearAccessResponse();
-  }
-
-  acknowledge() {
-    this.clearAccessResponse();
-    this.registerAccessResponse = undefined;
-
-  }
-
-  private clearAccessResponse() {
+  clearAccessResponse() {
     this.registerAccessResponse = undefined;
     this.searchTerm = '';
     this.memberNotFoundMessage = '';
