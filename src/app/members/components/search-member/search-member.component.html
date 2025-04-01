@@ -1,22 +1,56 @@
 <div class="container">
-  <mat-card class="search-card">
-    <mat-form-field appearance="outline">
-      <mat-label>Buscar Socio</mat-label>
-      <input matInput type="text" [(ngModel)]="searchTerm" placeholder="Ingrese número de DNI" />
-    </mat-form-field>
+  <mat-card class="search-card" appearance="outlined">
+    <ng-container *ngIf="!member && !registerAccessResponse && !memberNotFoundMessage">
+      <mat-form-field appearance="outline">
+        <input matInput type="text" [(ngModel)]="searchTerm" placeholder="Ingrese número de DNI"/>
+      </mat-form-field>
 
-    <button mat-raised-button color="primary" (click)="search()">
-      <mat-icon>search</mat-icon> Buscar
-    </button>
+      <button mat-fab extended color="secondary" (click)="search()" [disabled]="!searchTerm">
+        <mat-icon>search</mat-icon>
+        Buscar
+      </button>
+    </ng-container>
+
+    <!-- Member not found -->
+    <ng-container *ngIf="memberNotFoundMessage">
+      <mat-card-header>
+        <mat-card-title>{{ memberNotFoundMessage }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-actions align="end">
+        <button mat-button color="primary" (click)="acknowledge()">
+          Aceptar
+        </button>
+      </mat-card-actions>
+    </ng-container>
+
+    <!-- Member found -->
+    <ng-container *ngIf="member && !registerAccessResponse">
+      <mat-card-header>
+        <mat-card-title>Hola {{ member.name }} {{ member.lastName }}!</mat-card-title>
+        <mat-card-subtitle>DNI {{ member.dni }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions align="end">
+        <button mat-button color="secondary" (click)="cancel()">
+          Cancelar
+        </button>
+
+        <button mat-button color="primary" (click)="allow(member.dni)" [disabled]="!member">
+          Acceder al estacionamiento
+        </button>
+      </mat-card-actions>
+    </ng-container>
+
+    <!-- Member not allowed -->
+    <ng-container *ngIf="registerAccessResponse">
+      <mat-card-header>
+        <mat-card-title>{{ registerAccessResponse.title }}</mat-card-title>
+        <mat-card-subtitle>{{ registerAccessResponse.subtitle }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions align="end">
+        <button mat-button color="primary" (click)="acknowledge()">
+          Aceptar
+        </button>
+      </mat-card-actions>
+    </ng-container>
   </mat-card>
-
-  <mat-card *ngIf="member else notAuthorized" class="results-card">
-    <mat-icon>check</mat-icon> El Socio {{member.name}} {{member.lastName}} está autorizado a estacionar.
-  </mat-card>
-
-  <ng-template #notAuthorized>
-    <mat-card *ngIf="member else notAuthorized" class="results-card">
-      No se encontró un socio con el DNI {{searchTerm}}
-    </mat-card>
-  </ng-template>
 </div>

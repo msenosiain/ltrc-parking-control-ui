@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://parking-control-be.lostordos.com.ar/api/v1'
+  apiBaseUrl: 'http://localhost:3000/api/v1'
 };
