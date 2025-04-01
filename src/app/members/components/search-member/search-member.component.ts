@@ -1,6 +1,6 @@
 import {Component, DestroyRef, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {FormsModule} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {CommonModule} from '@angular/common';
@@ -15,7 +15,7 @@ import {MembersService, RegisterAccessResponse} from '../../members.service';
   selector: 'ltrc-search-member',
   templateUrl: './search-member.component.html',
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     MatCardModule,
     MatIconModule,
@@ -31,14 +31,14 @@ export class SearchMemberComponent {
   destroyRef = inject(DestroyRef);
   memberNotFoundMessage: string = '';
   registerAccessResponse: RegisterAccessResponse | undefined = undefined;
-  searchTerm: string = '';
+  dni = new FormControl('', [Validators.required, Validators.pattern(/^\d{7,8}$/)]);
 
   constructor(private membersService: MembersService) {
   }
 
   search() {
-    if (this.searchTerm) {
-      this.membersService.searchMemberByDni(this.searchTerm).pipe(
+    if (this.dni.value) {
+      this.membersService.searchMemberByDni(this.dni.value).pipe(
         takeUntilDestroyed(this.destroyRef),
         catchError((err) => {
             console.error('Error:', err);
@@ -54,7 +54,7 @@ export class SearchMemberComponent {
 
   clearAccessResponse() {
     this.registerAccessResponse = undefined;
-    this.searchTerm = '';
+    this.dni.setValue('');
     this.memberNotFoundMessage = '';
   }
 }
