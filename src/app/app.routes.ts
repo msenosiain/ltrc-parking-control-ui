@@ -5,10 +5,7 @@ import {SearchMemberComponent} from './members/components/search-member/search-m
 import {AuthCallbackComponent} from './auth/components/auth-callback/auth-callback.component';
 
 export const routes: Routes = [
+  {path: '', component: SearchMemberComponent},
   {path: 'auth/callback', component: AuthCallbackComponent},
   {path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
-  {
-    path: '',
-    component: SearchMemberComponent,
-  }
 ];
