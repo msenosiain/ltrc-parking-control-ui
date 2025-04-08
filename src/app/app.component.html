@@ -1,6 +1,7 @@
 <mat-toolbar color="primary">
   <img src="logo-ltrc.png" alt="Logo" class="logo">
   <span class="title">{{title}}</span>
+  <button *ngIf="isLoggedIn$ | async as isLoggedIn" mat-button (click)="logout()">Cerrar Sesión</button>
 </mat-toolbar>
 
 <div style="padding: 20px;">
