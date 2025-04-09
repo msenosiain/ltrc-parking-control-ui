@@ -27,8 +27,9 @@ export class MembersService {
     return this.httpClient.get<RegisterAccessResponse>(`${this.membersApiUrl}/${dni}`);
   }
 
-  getMembers(page: number = 1, limit: number = 10, sortBy?: string, direction?: SortDirection): Observable<PaginatedResponse<Member>> {
+  getMembers(query: string, page: number = 1, limit: number = 10, sortBy?: string, direction?: SortDirection): Observable<PaginatedResponse<Member>> {
     const params = new HttpParams()
+      .set('query', query)
       .set('page', page.toString())
       .set('size', limit.toString())
       .set('sortBy', sortBy ?? 'lastName')
