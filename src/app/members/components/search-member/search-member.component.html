@@ -6,7 +6,7 @@
                [formControl]="dni" placeholder="Ingrese un número de DNI"/>
       </mat-form-field>
 
-      <button mat-fab extended color="secondary" (click)="search()" [disabled]="dni.invalid">
+      <button mat-flat-button (click)="search()" [disabled]="dni.invalid">
         <mat-icon>search</mat-icon>
         Buscar
       </button>
