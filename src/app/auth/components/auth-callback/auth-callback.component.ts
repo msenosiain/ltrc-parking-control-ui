@@ -3,7 +3,8 @@ import {CommonModule} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthService} from '../../auth.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {map, switchMap, tap} from 'rxjs';
+import {map} from 'rxjs';
+import {jwtDecode} from 'jwt-decode';
 
 @Component({
   selector: 'ltrc-auth-callback',
@@ -21,20 +22,18 @@ export class AuthCallbackComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.pipe(
       takeUntilDestroyed(this.destroyRef),
-      tap((params) => {
-        const token = params['token'];
+      map((params) => {
+        return params['token'];
+      })
+    ).subscribe((token) => {
         if (token) {
           this.authService.storeToken(token);
+          const user = jwtDecode(token);
+          this.authService.setUser(user);
+          this.router.navigate(['/dashboard']);
         } else {
           this.authService.loginWithGoogle();
         }
-      }),
-      switchMap(() => {
-        return this.authService.getProfile();
-      })
-    ).subscribe((userProfile) => {
-      this.authService.setUser(userProfile);
-        this.router.navigate(['/dashboard']);
       }
     );
   }
