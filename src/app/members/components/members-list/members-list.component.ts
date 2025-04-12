@@ -9,8 +9,9 @@ import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
-import {BrowserModule} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
+import {MatDialog} from '@angular/material/dialog';
+import {MemberItemComponent} from '../member-item/member-item.component';
 
 @Component({
   selector: 'ltrc-members-list',
@@ -22,12 +23,16 @@ export class MembersListComponent implements OnInit {
 
   destroyRef = inject(DestroyRef);
 
-  displayedColumns: string[] = ['lastName', 'name', 'dni'];
+  displayedColumns: string[] = ['lastName', 'name', 'dni', 'actions'];
   dataSource = new MatTableDataSource<Member>();
   totalMembers: number = 0;
   currentPage: number = 1;
   pageSize: number = 10;
   query = '';
+
+  member!: Member;
+
+  readonly dialog = inject(MatDialog);
 
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort!: MatSort;
@@ -74,5 +79,31 @@ export class MembersListComponent implements OnInit {
   clearFilter() {
     this.query = '';
     this.loadMembers();
+  }
+
+  createMember() {
+    console.log('createMember');
+    this.dialog.open(MemberItemComponent, {
+      width: '90vw',
+      maxWidth: '500px',
+      data: null, // o no pasar nada
+    });
+  }
+
+  editMember(member: Member) {
+    const dialogRef = this.dialog.open(MemberItemComponent, {
+      width: '90vw',
+      maxWidth: '500px',
+      data: member,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.membersService.updateMember(member._id, result).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() =>
+          this.loadMembers()
+        )
+        ;
+      }
+    });
   }
 }

@@ -23,8 +23,16 @@ export class MembersService {
   constructor(private httpClient: HttpClient) {
   }
 
+  createMember(payload: Member) {
+    return this.httpClient.post<Member>(this.membersApiUrl, payload);
+  }
+
+  updateMember(id: string, payload: Partial<Member>) {
+    return this.httpClient.put<Member>(`${this.membersApiUrl}/${id}`, payload);
+  }
+
   searchMemberByDni(dni: string): Observable<RegisterAccessResponse> {
-    return this.httpClient.get<RegisterAccessResponse>(`${this.membersApiUrl}/${dni}`);
+    return this.httpClient.get<RegisterAccessResponse>(`${this.membersApiUrl}/access/${dni}`);
   }
 
   getMembers(query: string, page: number = 1, limit: number = 10, sortBy?: string, direction?: SortDirection): Observable<PaginatedResponse<Member>> {

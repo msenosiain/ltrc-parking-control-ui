@@ -1,5 +1,9 @@
-.search-input {
-  width: 50%;
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  .search-input {
+    width: 50%;
+  }
 }
 
 .members-list {
