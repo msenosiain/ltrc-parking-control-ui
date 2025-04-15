@@ -18,9 +18,9 @@
 
   <mat-form-field appearance="outline">
     <mat-label>DNI</mat-label>
-    <input matInput formControlName="dni" mask="separator" thousandSeparator="." separatorLimit="90000000"/>
+    <input matInput type="text" formControlName="dni" mask="separator" thousandSeparator="." separatorLimit="90000000"/>
     <mat-error *ngIf="form.get('dni')?.hasError('required')">DNI es requerido</mat-error>
-    <mat-error *ngIf="form.get('dni')?.hasError('pattern')">DNI debe ser numérico</mat-error>
+    <mat-error *ngIf="form.get('dni')?.hasError('pattern')">DNI debe ser numérico de entre 7 y 8 dígitos</mat-error>
   </mat-form-field>
 
   </div>

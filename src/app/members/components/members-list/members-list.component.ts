@@ -12,6 +12,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {CommonModule} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
 import {MemberItemComponent} from '../member-item/member-item.component';
+import {ConfirmDialogComponent} from '../../../common/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'ltrc-members-list',
@@ -82,11 +83,19 @@ export class MembersListComponent implements OnInit {
   }
 
   createMember() {
-    console.log('createMember');
-    this.dialog.open(MemberItemComponent, {
+    const dialogRef = this.dialog.open(MemberItemComponent, {
       width: '90vw',
       maxWidth: '500px',
-      data: null, // o no pasar nada
+      data: null,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.membersService.createMember(result).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() =>
+          this.loadMembers()
+        )
+        ;
+      }
     });
   }
 
@@ -103,6 +112,26 @@ export class MembersListComponent implements OnInit {
           this.loadMembers()
         )
         ;
+      }
+    });
+  }
+
+  deleteMember(member: Member) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmar eliminación',
+        message: `Está seguro que desea eliminar a:
+        ${member.lastName}, ${member.name} DNI: ${member.dni}?`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // 🔥 User confirmed, proceed with delete
+        this.membersService.deleteMember(member._id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+          this.loadMembers();
+        });
       }
     });
   }

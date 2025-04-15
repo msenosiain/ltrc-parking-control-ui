@@ -45,4 +45,8 @@ export class MembersService {
 
     return this.httpClient.get<PaginatedResponse<Member>>(`${this.membersApiUrl}`, {params});
   }
+
+  deleteMember(dni: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.membersApiUrl}/${dni}`);
+  }
 }
