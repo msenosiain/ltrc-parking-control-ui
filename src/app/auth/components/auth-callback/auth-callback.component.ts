@@ -23,13 +23,12 @@ export class AuthCallbackComponent implements OnInit {
     this.route.queryParams.pipe(
       takeUntilDestroyed(this.destroyRef),
       map((params) => {
-        return params['token'];
+        return {access_token: params['access_token'], refresh_token: params['refresh_token']};
       })
     ).subscribe((token) => {
         if (token) {
-          this.authService.storeToken(token);
-          const user = jwtDecode(token);
-          this.authService.setUser(user);
+          this.authService.setAccessToken(token.access_token);
+          this.authService.setRefreshToken(token.refresh_token);
           this.router.navigate(['/dashboard']);
         } else {
           this.authService.loginWithGoogle();

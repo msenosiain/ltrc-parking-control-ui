@@ -1,14 +1,22 @@
 import {inject,} from '@angular/core';
-import {CanActivateFn,} from '@angular/router';
-import {map} from 'rxjs';
+import {CanActivateFn, Router,} from '@angular/router';
+import {filter, map} from 'rxjs';
 import {AuthService} from '../auth.service';
 
 export const hasRoleGuard: CanActivateFn = (route) => {
   const allowedRoles: string[] = route.data?.['allowedRoles'];
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  return inject(AuthService).user$.pipe(
+  return authService.user$.pipe(
+    filter(user => !!user),
     map(user => {
-      return allowedRoles.some(role => user.roles.includes(role));
+      const allowed = allowedRoles.some(role => user.roles.includes(role))
+      if (!allowed) {
+        console.error(`User ${user.email} not allowed to /${route.url}`)
+        router.navigate(['/dashboard']);
+      }
+      return allowed;
     })
   );
 };

@@ -1,11 +1,9 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import {Router, RouterOutlet} from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {AuthService} from './auth/auth.service';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
-import {Observable} from 'rxjs';
-import {jwtDecode} from 'jwt-decode';
 
 @Component({
   selector: 'ltrc-root',
@@ -13,23 +11,14 @@ import {jwtDecode} from 'jwt-decode';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   title = 'Estacionamiento LTRC';
-  user$!: Observable<any>;
+  // @ts-ignore
+  user$;
 
   constructor(private authService: AuthService, private router: Router, private cd: ChangeDetectorRef) {
-
-  }
-
-  ngOnInit() {
-    const token = this.authService.getAuthToken()
-    if (token) {
-      const user = jwtDecode(token);
-      this.authService.setUser(user);
-      this.user$ = this.authService.user$;
-      this.cd.markForCheck();
-    }
+    this.user$ = this.authService.user$;
   }
 
   logout(): void {
