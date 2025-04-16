@@ -28,7 +28,7 @@ export class MembersListComponent implements OnInit {
   dataSource = new MatTableDataSource<Member>();
   totalMembers: number = 0;
   currentPage: number = 1;
-  pageSize: number = 10;
+  pageSize: number = 25;
   query = '';
 
   member!: Member;
