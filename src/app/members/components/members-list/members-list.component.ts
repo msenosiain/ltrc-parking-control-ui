@@ -13,16 +13,19 @@ import {CommonModule} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
 import {MemberItemComponent} from '../member-item/member-item.component';
 import {ConfirmDialogComponent} from '../../../common/components/confirm-dialog/confirm-dialog.component';
+import {Role} from '../../../auth/roles.enum';
+import {AllowedRolesDirective} from '../../../auth/directives/allowed-roles.directive';
 
 @Component({
   selector: 'ltrc-members-list',
-  imports: [CommonModule, MatButtonModule, MatTableModule, MatPaginatorModule, MatSortModule, MatInputModule, MatIconModule, FormsModule],
+  imports: [CommonModule, MatButtonModule, MatTableModule, MatPaginatorModule, MatSortModule, MatInputModule, MatIconModule, FormsModule, AllowedRolesDirective],
   templateUrl: './members-list.component.html',
   styleUrl: './members-list.component.scss'
 })
 export class MembersListComponent implements OnInit {
 
   destroyRef = inject(DestroyRef);
+  Role = Role;
 
   displayedColumns: string[] = ['lastName', 'name', 'dni', 'actions'];
   dataSource = new MatTableDataSource<Member>();
