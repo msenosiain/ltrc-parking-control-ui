@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListModule} from "@angular/material/list";
 import {RouterModule, RouterOutlet} from "@angular/router";
+import { Role } from '../auth/roles.enum';
 
 @Component({
   selector: 'ltrc-dashboard',
@@ -10,5 +11,6 @@ import {RouterModule, RouterOutlet} from "@angular/router";
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
+  Role = Role;
 
 }
