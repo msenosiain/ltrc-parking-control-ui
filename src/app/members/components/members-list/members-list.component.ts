@@ -94,10 +94,10 @@ export class MembersListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.membersService.createMember(result).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() =>
+        const memberPayload = this.buildMemberPayload(result);
+        this.membersService.createMember(memberPayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() =>
           this.loadMembers()
-        )
-        ;
+        );
       }
     });
   }
@@ -111,7 +111,8 @@ export class MembersListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.membersService.updateMember(member._id, result).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() =>
+        const memberPayload = this.buildMemberPayload(result)
+        this.membersService.updateMember(member._id, memberPayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() =>
           this.loadMembers()
         )
         ;
@@ -137,5 +138,13 @@ export class MembersListComponent implements OnInit {
         });
       }
     });
+  }
+
+  private buildMemberPayload(result: any): Member {
+    return {
+      _id: '',
+      fullName: `${result.lastName} ${result.name}`,
+      dni: result.dni
+    } as Member;
   }
 }

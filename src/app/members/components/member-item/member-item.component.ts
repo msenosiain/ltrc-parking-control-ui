@@ -36,16 +36,20 @@ export class MemberItemComponent implements OnInit {
   ngOnInit(): void {
     this.isEditMode = !!this.data;
 
+    const [lastName, ...nameParts] = (this.data?.fullName ?? '')
+      .trim()
+      .split(/\s+/);
+
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      lastName: [this.data?.lastName || '', Validators.required],
+      name: [nameParts.join(' '), Validators.required],
+      lastName: [lastName, Validators.required],
       dni: [this.data?.dni ?? '', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
     });
   }
 
   save() {
     if (this.form.valid) {
-      this.dialogRef.close(this.form.value); // Devuelve el member al componente padre
+      this.dialogRef.close(this.form.value);
     }
   }
 
