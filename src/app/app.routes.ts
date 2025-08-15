@@ -14,7 +14,7 @@ export const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [authGuard, hasRoleGuard],
-    data: {allowedRoles: [Role.USER]},
+    data: {allowedRoles: [Role.USER, Role.ADMIN]},
     children: [
       {
         path: 'members',

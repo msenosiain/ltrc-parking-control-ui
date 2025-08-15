@@ -15,14 +15,9 @@
 
   <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
 
-    <ng-container matColumnDef="lastName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
-      <td mat-cell *matCellDef="let member">{{ member.lastName }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="name">
+    <ng-container matColumnDef="fullName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-      <td mat-cell *matCellDef="let member">{{ member.name }}</td>
+      <td mat-cell *matCellDef="let member">{{ member.fullName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="dni">

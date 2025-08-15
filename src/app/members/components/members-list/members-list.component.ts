@@ -27,7 +27,7 @@ export class MembersListComponent implements OnInit {
   destroyRef = inject(DestroyRef);
   Role = Role;
 
-  displayedColumns: string[] = ['lastName', 'name', 'dni', 'actions'];
+  displayedColumns: string[] = ['fullName', 'dni', 'actions'];
   dataSource = new MatTableDataSource<Member>();
   totalMembers: number = 0;
   currentPage: number = 1;
@@ -47,7 +47,7 @@ export class MembersListComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
-    this.sort.sort(({id: 'lastName', start: 'asc'}) as MatSortable)
+    this.sort.sort(({id: 'fullName', start: 'asc'}) as MatSortable)
     this.dataSource.sort = this.sort;
 
     this.sort.sortChange.pipe(
@@ -125,7 +125,7 @@ export class MembersListComponent implements OnInit {
       data: {
         title: 'Confirmar eliminación',
         message: `Está seguro que desea eliminar a:
-        ${member.lastName}, ${member.name} DNI: ${member.dni}?`,
+        ${member.fullName} DNI: ${member.dni}?`,
       },
     });
 

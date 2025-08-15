@@ -39,8 +39,8 @@ export class MembersService {
     const params = new HttpParams()
       .set('query', query)
       .set('page', page.toString())
-      .set('size', limit.toString())
-      .set('sortBy', sortBy ?? 'lastName')
+      .set('limit', limit.toString())
+      .set('sortBy', sortBy ?? 'fullName')
       .set('sortOrder', direction ?? 'asc');
 
     return this.httpClient.get<PaginatedResponse<Member>>(`${this.membersApiUrl}`, {params});

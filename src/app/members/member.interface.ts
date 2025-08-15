@@ -1,6 +1,5 @@
 export interface Member {
   _id: string;
-  name: string;
-  lastName: string;
+  fullName: string;
   dni: string;
 }
