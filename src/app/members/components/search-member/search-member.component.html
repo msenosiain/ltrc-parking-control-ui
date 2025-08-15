@@ -14,7 +14,8 @@
       <div class="actions-container">
         <p class="available-spots">Quedan {{ availableSpaces }} lugares disponibles</p>
         <button class="car-left" mat-flat-button (click)="carLeft()" [disabled]="availableSpaces === totalSpaces">
-          Registrar salida de vehículo
+          Registrar salida del estacionamiento
+          <mat-icon>directions_cark</mat-icon>
         </button>
       </div>
     </ng-container>
@@ -43,7 +44,7 @@
         </button>
 
         <button mat-button color="primary" (click)="allow()" [disabled]="!member">
-          Acceder al estacionamiento
+          <mat-icon>no_crash</mat-icon> Acceder al estacionamiento
         </button>
       </mat-card-actions>
     </ng-container>
