@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatCardModule} from '@angular/material/card';
@@ -10,6 +10,10 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {catchError, of} from 'rxjs';
 import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
 import {MembersService, RegisterAccessResponse} from '../../members.service';
+import {Member} from '../../member.interface';
+import {AccessLogService} from '../../../access-log/access-log.service';
+import {ParkingService} from '../../../parking/parking.service';
+import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'ltrc-search-member',
@@ -27,13 +31,24 @@ import {MembersService, RegisterAccessResponse} from '../../members.service';
   styleUrl: './search-member.component.scss',
   providers: [provideNgxMask(), MembersService]
 })
-export class SearchMemberComponent {
+export class SearchMemberComponent implements OnInit {
   destroyRef = inject(DestroyRef);
+  member: Member | undefined;
   memberNotFoundMessage: string = '';
   registerAccessResponse: RegisterAccessResponse | undefined = undefined;
   dni = new FormControl('', [Validators.required, Validators.pattern(/^\d{7,8}$/)]);
+  availableSpaces = 0;
+  totalSpaces = environment.totalSpaces
 
-  constructor(private membersService: MembersService) {
+  constructor(private membersService: MembersService,
+              private accessLogService: AccessLogService,
+              private parkingService: ParkingService) {
+  }
+
+  ngOnInit() {
+    this.parkingService.availableSpaces$.subscribe(
+      (spaces) => (this.availableSpaces = spaces)
+    );
   }
 
   search() {
@@ -47,14 +62,46 @@ export class SearchMemberComponent {
             return of(undefined);
           }
         )
-      ).subscribe(response => {
-        this.registerAccessResponse = response;
-      })
+      ).subscribe(member => this.member = member)
     }
   }
 
-  reset() {
+  allow() {
+    if (!this.member || !this.member.dni) {
+      return;
+    }
+    this.accessLogService.registerAccess(this.member.dni).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(registerAccessResponse => {
+        this.registerAccessResponse = registerAccessResponse;
+        if (registerAccessResponse.accessGranted) {
+          this.parkingService.parkCar();
+        }
+        this.clearMember();
+      }
+    )
+
+  }
+
+  cancel() {
+    this.clearMember();
+  }
+
+  acknowledge() {
+    this.clearMember();
     this.registerAccessResponse = undefined;
+
+  }
+
+  carLeft() {
+    const success = this.parkingService.leaveCar();
+    if (!success) {
+      alert('No hay autos para salir!');
+    }
+  }
+
+  private clearMember() {
+    this.member = undefined;
     this.dni.reset();
     this.memberNotFoundMessage = '';
   }

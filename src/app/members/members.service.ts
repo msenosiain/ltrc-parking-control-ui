@@ -31,8 +31,8 @@ export class MembersService {
     return this.httpClient.put<Member>(`${this.membersApiUrl}/${id}`, payload);
   }
 
-  searchMemberByDni(dni: string): Observable<RegisterAccessResponse> {
-    return this.httpClient.get<RegisterAccessResponse>(`${this.membersApiUrl}/access/${dni}`);
+  searchMemberByDni(dni: string): Observable<Member> {
+    return this.httpClient.get<Member>(`${this.membersApiUrl}/${dni}`);
   }
 
   getMembers(query: string, page: number = 1, limit: number = 10, sortBy?: string, direction?: SortDirection): Observable<PaginatedResponse<Member>> {
