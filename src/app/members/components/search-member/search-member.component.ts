@@ -7,12 +7,12 @@ import {CommonModule} from '@angular/common';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {catchError, of} from 'rxjs';
+import {catchError, Observable, of} from 'rxjs';
 import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
 import {MembersService, RegisterAccessResponse} from '../../members.service';
 import {Member} from '../../member.interface';
 import {AccessLogService} from '../../../access-log/access-log.service';
-import {ParkingService} from '../../../parking/parking.service';
+import {ParkingService, ParkingStatus} from '../../../parking/parking.service';
 import {environment} from '../../../../environments/environment';
 
 @Component({
@@ -37,18 +37,16 @@ export class SearchMemberComponent implements OnInit {
   memberNotFoundMessage: string = '';
   registerAccessResponse: RegisterAccessResponse | undefined = undefined;
   dni = new FormControl('', [Validators.required, Validators.pattern(/^\d{7,8}$/)]);
-  availableSpaces = 0;
+  parkingStatus$: Observable<ParkingStatus | null>;
   totalSpaces = environment.totalSpaces
 
   constructor(private membersService: MembersService,
               private accessLogService: AccessLogService,
               private parkingService: ParkingService) {
+    this.parkingStatus$ = this.parkingService.parkingStatus$;
   }
 
   ngOnInit() {
-    this.parkingService.availableSpaces$.subscribe(
-      (spaces) => (this.availableSpaces = spaces)
-    );
   }
 
   search() {
@@ -75,7 +73,7 @@ export class SearchMemberComponent implements OnInit {
     ).subscribe(registerAccessResponse => {
         this.registerAccessResponse = registerAccessResponse;
         if (registerAccessResponse.accessGranted) {
-          this.parkingService.parkCar();
+          this.parkingService.carEnters();
         }
         this.clearMember();
       }
@@ -90,14 +88,11 @@ export class SearchMemberComponent implements OnInit {
   acknowledge() {
     this.clearMember();
     this.registerAccessResponse = undefined;
-
   }
 
   carLeft() {
-    const success = this.parkingService.leaveCar();
-    if (!success) {
-      alert('No hay autos para salir!');
-    }
+    this.parkingService.carLeaves();
+
   }
 
   private clearMember() {

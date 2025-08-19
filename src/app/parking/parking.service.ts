@@ -1,45 +1,47 @@
 // parking.service.ts
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {environment} from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface ParkingStatus {
+  total: number;
+  occupied: number;
+  available: number;
+}
+
+@Injectable({ providedIn: 'root' })
 export class ParkingService {
-  private totalSpaces = environment.totalSpaces;
-  private occupiedSpaces = 0;
+  private parkingApiUrl = `${environment.apiBaseUrl}/parking`;
 
-  // Observable para que el componente se suscriba y reciba actualizaciones
-  private availableSpacesSubject = new BehaviorSubject<number>(this.totalSpaces);
-  availableSpaces$ = this.availableSpacesSubject.asObservable();
+  // BehaviorSubject mantiene el último valor y lo emite a nuevos subscriptores
+  private parkingStatusSubject = new BehaviorSubject<ParkingStatus | null>(null);
 
-  constructor() {}
+  // Observable expuesto al resto de la app
+  parkingStatus$: Observable<ParkingStatus | null> = this.parkingStatusSubject.asObservable();
 
-  // Intentar estacionar un auto
-  parkCar(): boolean {
-    if (this.occupiedSpaces < this.totalSpaces) {
-      this.occupiedSpaces++;
-      this.updateAvailableSpaces();
-      return true;
-    } else {
-      return false; // No hay lugar
-    }
+  constructor(private http: HttpClient) {
+    this.loadStatus(); // carga inicial
   }
 
-  // Registrar salida de un auto
-  leaveCar(): boolean {
-    if (this.occupiedSpaces > 0) {
-      this.occupiedSpaces--;
-      this.updateAvailableSpaces();
-      return true;
-    } else {
-      return false; // No hay autos para salir
-    }
+  /** Cargar estado inicial desde el backend */
+  loadStatus() {
+    this.http.get<ParkingStatus>(`${this.parkingApiUrl}/status`).subscribe(status => {
+      this.parkingStatusSubject.next(status);
+    });
   }
 
-  // Actualiza el observable
-  private updateAvailableSpaces() {
-    this.availableSpacesSubject.next(this.totalSpaces - this.occupiedSpaces);
+  /** Auto entra */
+  carEnters() {
+    this.http.post<ParkingStatus>(`${this.parkingApiUrl}/enter`, {}).subscribe(status => {
+      this.parkingStatusSubject.next(status);
+    });
+  }
+
+  /** Auto sale */
+  carLeaves() {
+    this.http.post<ParkingStatus>(`${this.parkingApiUrl}/leave`, {}).subscribe(status => {
+      this.parkingStatusSubject.next(status);
+    });
   }
 }

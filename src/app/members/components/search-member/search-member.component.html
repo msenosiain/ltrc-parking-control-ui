@@ -11,9 +11,9 @@
         Buscar
       </button>
 
-      <div class="actions-container">
-        <p class="available-spots">Quedan {{ availableSpaces }} lugares disponibles</p>
-        <button class="car-left" mat-flat-button (click)="carLeft()" [disabled]="availableSpaces === totalSpaces">
+      <div *ngIf="parkingStatus$ | async as parkingStatus" class="actions-container">
+        <p class="available-spots">Quedan {{ parkingStatus.available }} lugares disponibles</p>
+        <button class="car-left" mat-flat-button (click)="carLeft()" [disabled]="parkingStatus.available === parkingStatus.total">
           Registrar salida del estacionamiento
           <mat-icon>directions_cark</mat-icon>
         </button>
