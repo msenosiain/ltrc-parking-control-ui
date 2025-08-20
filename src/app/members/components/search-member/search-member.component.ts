@@ -7,13 +7,12 @@ import {CommonModule} from '@angular/common';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {catchError, Observable, of} from 'rxjs';
+import {catchError, Observable, of, switchMap} from 'rxjs';
 import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
 import {MembersService, RegisterAccessResponse} from '../../members.service';
 import {Member} from '../../member.interface';
 import {AccessLogService} from '../../../access-log/access-log.service';
 import {ParkingService, ParkingStatus} from '../../../parking/parking.service';
-import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'ltrc-search-member',
@@ -38,7 +37,6 @@ export class SearchMemberComponent implements OnInit {
   registerAccessResponse: RegisterAccessResponse | undefined = undefined;
   dni = new FormControl('', [Validators.required, Validators.pattern(/^\d{7,8}$/)]);
   parkingStatus$: Observable<ParkingStatus | null>;
-  totalSpaces = environment.totalSpaces
 
   constructor(private membersService: MembersService,
               private accessLogService: AccessLogService,
@@ -47,6 +45,7 @@ export class SearchMemberComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.parkingService.loadStatus().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
   search() {
@@ -65,20 +64,27 @@ export class SearchMemberComponent implements OnInit {
   }
 
   allow() {
-    if (!this.member || !this.member.dni) {
+    if (!this.member?.dni) {
       return;
     }
-    this.accessLogService.registerAccess(this.member.dni).pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(registerAccessResponse => {
-        this.registerAccessResponse = registerAccessResponse;
-        if (registerAccessResponse.accessGranted) {
-          this.parkingService.carEnters();
-        }
-        this.clearMember();
-      }
-    )
 
+    this.accessLogService.registerAccess(this.member.dni).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      switchMap(registerAccessResponse => {
+        this.registerAccessResponse = registerAccessResponse;
+
+        if (registerAccessResponse.accessGranted) {
+          // Devuelve el observable de carEnters para continuar la cadena
+          return this.parkingService.carEnters();
+        } else {
+          // Si no se permite acceso, devolvemos un observable vacío
+          return of(null);
+        }
+      })
+    ).subscribe({
+      next: () => this.clearMember(),
+      error: err => console.error(err)
+    });
   }
 
   cancel() {
@@ -91,8 +97,9 @@ export class SearchMemberComponent implements OnInit {
   }
 
   carLeft() {
-    this.parkingService.carLeaves();
-
+    this.parkingService.carLeaves().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
   }
 
   private clearMember() {
